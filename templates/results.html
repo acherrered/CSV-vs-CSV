@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>CSV Comparison Results</title>
+    </head>
+    <body>
+        <h1>CSV Comparison Results</h1>
+        <table>
+            <tr>
+                <th>Column</th>
+                <th>Total Values (File 1)</th>
+                <th>Total Values (File 2)</th>
+                <th>Are Total Values Same?</th>
+                <th>Null Values (File 1)</th>
+                <th>Null Values (File 2)</th>
+                <th>Are Null Values Same?</th>
+                <th>Distinct Values (File 1)</th>
+                <th>Distinct Values (File 2)</th>
+                <th>Are Distinct Values Same?</th>
+            </tr>
+            {% for col, values in comparison.items() %}
+                <tr>
+                    <td>{{ col }}</td>
+                    <td style="color: {{ 'green' if values.total_values_same else 'red' }}">{{ values.total_values_file1 }}</td>
+                    <td style="color: {{ 'green' if values.total_values_same else 'red' }}">{{ values.total_values_file2 }}</td>
+                    <td style="color: {{ 'green' if values.total_values_same else 'red' }}">{{ values.total_values_same }}</td>
+                    <td style="color: {{ 'green' if values.null_values_same else 'red' }}">{{ values.null_values_file1 }}</td>
+                    <td style="color: {{ 'green' if values.null_values_same else 'red' }}">{{ values.null_values_file2 }}</td>
+                    <td style="color: {{ 'green' if values.null_values_same else 'red' }}">{{ values.null_values_same }}</td>
+                    <td style="color: {{ 'green' if values.distinct_values_same else 'red' if 'distinct_values_same' in values else 'black' }}">{{ values.distinct_values_file1 if 'distinct_values_file1' in values else 'N/A' }}</td>
+                    <td style="color: {{ 'green' if values.distinct_values_same else 'red' if 'distinct_values_same' in values else 'black' }}">{{ values.distinct_values_file2 if 'distinct_values_file2' in values else 'N/A' }}</td>
+                    <td style="color: {{ 'green' if values.distinct_values_same else 'red' if 'distinct_values_same' in values else 'black' }}">{{ values.distinct_values_same if 'distinct_values_same' in values else 'N/A' }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    </body>
+</html>
