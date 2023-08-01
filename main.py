@@ -19,8 +19,10 @@ def upload_file():
 
         comparison = compare_results(result1, result2)
 
-        # Convert results to serializable format before saving in session
+        # Save the results and filenames in session
         session['comparison'] = comparison.to_dict()
+        session['filename1'] = file1.filename
+        session['filename2'] = file2.filename
 
         return redirect(url_for('results'))  # Redirect to the results route
 
@@ -28,9 +30,12 @@ def upload_file():
 
 @app.route('/results', methods=['GET'])
 def results():
-    # Retrieve the result from session
+    # Retrieve the results and filenames from session
     comparison = session.get('comparison', None)
-    return render_template('results.html', comparison=comparison)
+    filename1 = session.get('filename1', "File 1")
+    filename2 = session.get('filename2', "File 2")
+    return render_template('results.html', comparison=comparison, filename1=filename1, filename2=filename2)
+
 
 
 def analyse_df(df):

@@ -6,18 +6,18 @@
     <body>
         <h1>CSV Comparison Results</h1>
         <table>
-            <tr>
-                <th>Column</th>
-                <th>Total Values (File 1)</th>
-                <th>Total Values (File 2)</th>
-                <th>Are Total Values Same?</th>
-                <th>Null Values (File 1)</th>
-                <th>Null Values (File 2)</th>
-                <th>Are Null Values Same?</th>
-                <th>Distinct Values (File 1)</th>
-                <th>Distinct Values (File 2)</th>
-                <th>Are Distinct Values Same?</th>
-            </tr>
+<tr>
+    <th>Column</th>
+    <th>Total Values ({{ filename1 }})</th>
+    <th>Total Values ({{ filename2 }})</th>
+    <th>Are Total Values Same?</th>
+    <th>Null Values ({{ filename1 }})</th>
+    <th>Null Values ({{ filename2 }})</th>
+    <th>Are Null Values Same?</th>
+    <th>Distinct Values ({{ filename1 }})</th>
+    <th>Distinct Values ({{ filename2 }})</th>
+    <th>Are Distinct Values Same?</th>
+</tr>
             {% for col, values in comparison.items() %}
                 <tr>
                     <td>{{ col }}</td>
