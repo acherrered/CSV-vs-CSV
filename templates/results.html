@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html>
     <head>
         <title>CSV Comparison Results</title>
@@ -6,7 +6,31 @@
             tr {
                 border-top: 1px solid lightgrey;
             }
+
+            
+            .top-aligned {
+                vertical-align: top;
+            }
         </style>
+
+        <script>
+    {% for col, values in comparison.items() %}
+        var values1_{{ loop.index }} = {{ values.Distinct_colvalues1_only | tojson }};
+        var values2_{{ loop.index }} = {{ values.Distinct_colvalues2_only | tojson }};
+    {% endfor %}
+
+    function generatePopup(values) {
+        var popupWindow = window.open("", "popupWindow", "width=400,height=400,scrollbars=yes");
+        var html = "<ul>";
+        for (var i = 0; i < values.length; i++) {
+            html += "<li>" + values[i] + "</li>";
+        }
+        html += "</ul>";
+        popupWindow.document.write(html);
+    }
+
+
+        </script>
     </head>
     <body>
         <h1>CSV Comparison Results</h1>
@@ -15,6 +39,7 @@
                 <th>Column</th>
                 <th>Detected Type ({{ filename1 }})</th>
                 <th>Detected Type ({{ filename2 }})</th>
+                <th>Are Detected Types Same?</th>
                 <th>Total Values ({{ filename1 }})</th>
                 <th>Total Values ({{ filename2 }})</th>
                 <th>Are Total Values Same?</th>
@@ -24,13 +49,24 @@
                 <th>Distinct Values ({{ filename1 }})</th>
                 <th>Distinct Values ({{ filename2 }})</th>
                 <th>Are Distinct Values Same?</th>
+                <th>Numeric Sum ({{ filename1 }})</th>
+                <th>Numeric Sum ({{ filename2 }})</th>
+                <th>Are Numeric Sums Same?</th>
+                <th>Distinct Col Values 1</th>
+                <th>Distinct Col Values 2</th>
+                <th>Are Distinct Col Values Same?</th>
                 <th>Reasons for Detected Type Difference</th>
             </tr>
             {% for col, values in comparison.items() %}
-                <tr>
+              <script>
+        var values1 = {{ values.Distinct_colvalues1 | tojson }};
+        var values2 = {{ values.Distinct_colvalues2 | tojson }};
+    </script>
+                <tr style="background-color: {{ 'white' if loop.index % 2 == 0 else '#f2f2f2' }};">
                     <td>{{ col }}</td>
                     <td style="color: {{ 'green' if values.detected_type_same else 'red' }}">{{ values.detected_type_file1 }}</td>
                     <td style="color: {{ 'green' if values.detected_type_same else 'red' }}">{{ values.detected_type_file2 }}</td>
+                    <td style="color: {{ 'green' if values.detected_type_same else 'red' }}">{{ values.detected_type_same }}</td>
                     <td style="color: {{ 'green' if values.total_values_same else 'red' }}">{{ values.total_values_file1 }}</td>
                     <td style="color: {{ 'green' if values.total_values_same else 'red' }}">{{ values.total_values_file2 }}</td>
                     <td style="color: {{ 'green' if values.total_values_same else 'red' }}">{{ values.total_values_same }}</td>
@@ -40,7 +76,38 @@
                     <td style="color: {{ 'green' if values.distinct_values_same else 'red' if 'distinct_values_same' in values else 'black' }}">{{ values.distinct_values_file1 if 'distinct_values_file1' in values else 'N/A' }}</td>
                     <td style="color: {{ 'green' if values.distinct_values_same else 'red' if 'distinct_values_same' in values else 'black' }}">{{ values.distinct_values_file2 if 'distinct_values_file2' in values else 'N/A' }}</td>
                     <td style="color: {{ 'green' if values.distinct_values_same else 'red' if 'distinct_values_same' in values else 'black' }}">{{ values.distinct_values_same if 'distinct_values_same' in values else 'N/A' }}</td>
-                    <td>{{ values.reason_for_different_types if 'reason_for_different_types' in values else 'N/A' }}</td>
+                    <td style="color: {{ 'green' if values.numeric_sum_same else 'red' if 'numeric_sum_same' in values else 'black' }}">{{ values.numeric_sum_file1 if 'numeric_sum_file1' in values else 'N/A' }}</td>
+                    <td style="color: {{ 'green' if values.numeric_sum_same else 'red' if 'numeric_sum_same' in values else 'black' }}">{{ values.numeric_sum_file2 if 'numeric_sum_file2' in values else 'N/A' }}</td>
+                    <td style="color: {{ 'green' if values.numeric_sum_same else 'red' if 'numeric_sum_same' in values else 'black' }}">{{ values.numeric_sum_same if 'numeric_sum_same' in values else 'N/A' }}</td>
+
+    
+<td>
+    {% if values.Distinct_colvalues1_only and values.Distinct_colvalues1_only|length > 0 %}
+        <button onclick="generatePopup(values1_{{ loop.index }})">Show Unique Distinct Values 1</button>
+        <div style="font-size: 26px;">
+            {% for char in values.UniqueSpecialChars1 %}
+                '{{ char }}'
+            {% endfor %}
+        </div>
+    {% endif %}
+</td>
+                  
+<td>
+    {% if values.Distinct_colvalues2_only and values.Distinct_colvalues2_only|length > 0 %}
+        <button onclick="generatePopup(values2_{{ loop.index }})">Show Unique Distinct Values 2</button>
+        <div style="font-size: 26px;">
+            {% for char in values.UniqueSpecialChars2 %}
+                '{{ char }}'
+            {% endfor %}
+        </div>
+    {% endif %}
+</td>
+
+                  
+        <td style="color: {{ 'green' if values.Distinct_colvalues_same else 'red' if 'Distinct_colvalues_same' in values else 'black' }}">{{ values.Distinct_colvalues_same if 'Distinct_colvalues_same' in values else 'N/A' }}</td>
+
+                  
+                <td>{{ values.reason_for_different_types if 'reason_for_different_types' in values else 'N/A' }}</td>
                 </tr>
             {% endfor %}
         </table>
