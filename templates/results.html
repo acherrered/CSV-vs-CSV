@@ -55,7 +55,8 @@
                 <th>Distinct Col Values 1</th>
                 <th>Distinct Col Values 2</th>
                 <th>Are Distinct Col Values Same?</th>
-                <th>Reasons for Detected Type Difference</th>
+                <th>Validation</th>
+                <!-- <th>Reasons for Detected Type Difference</th> -->
             </tr>
             {% for col, values in comparison.items() %}
               <script>
@@ -106,8 +107,10 @@
                   
         <td style="color: {{ 'green' if values.Distinct_colvalues_same else 'red' if 'Distinct_colvalues_same' in values else 'black' }}">{{ values.Distinct_colvalues_same if 'Distinct_colvalues_same' in values else 'N/A' }}</td>
 
+ <td style="color: {{ 'green' if values.Validation else 'red' }}">{{ values.Validation }}</td> <!-- Ajout de la cellule pour la validation -->
                   
-                <td>{{ values.reason_for_different_types if 'reason_for_different_types' in values else 'N/A' }}</td>
+                  
+            <!--    <td>{{ values.reason_for_different_types if 'reason_for_different_types' in values else 'N/A' }}</td> -->
                 </tr>
             {% endfor %}
         </table>

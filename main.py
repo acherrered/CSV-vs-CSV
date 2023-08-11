@@ -92,8 +92,10 @@ def analyse_df(df):
             numeric_sum = df[col].sum()  # calculate the sum of numeric values
         elif detected_type == 'object':
             # For string columns
-            value_type = 'string'
-            numeric_values = pd.to_numeric(df[col], errors='coerce')  # try to convert to numeric
+            value_type = 'object'
+            temp_col = df[col].replace(',', '.', regex=True)
+            numeric_values = pd.to_numeric(temp_col, errors='coerce')
+  # try to convert to numeric
             numeric_sum = numeric_values.sum()  # calculate the sum of numeric values
         elif np.issubdtype(detected_type, np.datetime64):
             # For date columns
@@ -121,10 +123,8 @@ def analyse_df(df):
         #print(distinct_colvalues)
 
         # If column is of type 'object', 'float64', or 'boolean', calculate distinct values
-        if (detected_type) in ['object', 'float64', 'bool','boolean' ]:
+        if (detected_type) in ['object', 'float64', 'bool','boolean','int64']:
             result[col]['distinct_values'] = len(df[col].unique())
-
-
 
     # Convert result to DataFrame for serializability
     return pd.DataFrame(result)
@@ -158,7 +158,8 @@ def compare_results(result1, result2, df1, df2):
                 'null_values_same': result1[col]['null_values'] == result2[col]['null_values'],
                 'numeric_sum_file1': result1[col]['numeric_sum'] if 'numeric_sum' in result1[col] else 'N/A',
                 'numeric_sum_file2': result2[col]['numeric_sum'] if 'numeric_sum' in result2[col] else 'N/A',
-                'numeric_sum_same': result1[col]['numeric_sum'] == result2[col]['numeric_sum'] if 'numeric_sum' in result1[col] and 'numeric_sum' in result2[col] else 'N/A',
+                'numeric_sum_same': abs(result1[col]['numeric_sum'] - result2[col]['numeric_sum']) < 1e-9 
+              #if 'numeric_sum' in result1[col] and 'numeric_sum' in result2[col] else 'N/A',
 
               
               }
@@ -216,7 +217,19 @@ def compare_results(result1, result2, df1, df2):
                     'UniqueSpecialChars1': list(special_chars_col1),
                     'UniqueSpecialChars2': list(special_chars_col2),
                 })
-
+              
+            validation = (
+                comparison[col]['detected_type_same'] and
+                comparison[col]['total_values_same'] and
+                comparison[col]['null_values_same'] and
+                comparison[col]['distinct_values_same'] and
+                comparison[col]['numeric_sum_same'] and
+                comparison[col]['Distinct_colvalues_same']
+            )
+            
+            # Add validation to this column's data
+            comparison[col]['Validation'] = validation
+      
     # Convert comparison to DataFrame for serializability
     for col, col_data in comparison.items():
         for key, value in col_data.items():
